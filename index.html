@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    </head>
+    
+    <body>
+        <div>
+            <input id = "lol">
+            <button onclick="f()" type="button">Go</button>
+            <p id = "text"></p>
+        </div>
+        <script>
+            f = () => {
+                console.log(document.getElementById("lol").value);
+                document.getElementById("text").innerHTML += "<br>" + document.getElementById("lol").value
+            }
+            var input = document.getElementById("lol");
+
+            // Execute a function when the user releases a key on the keyboard
+            input.addEventListener("keydown", function(event) {
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                f()
+            }
+            });
+
+        </script>
+    </body>
+
+</html>
