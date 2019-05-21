@@ -2,30 +2,40 @@
 
 <html>
     <head>
+        <style>
+            /*.hidden1 {display: none}*/
+            * {margin: 0; padding: 0}
+        </style>
     </head>
     
     <body>
-        <div>
-            <input id = "lol">
-            <button onclick="f()" type="button">Go</button>
-            <p id = "text"></p>
+        <div id = "whole">         
+            
         </div>
+        <button onclick="AddHely()" type="button">+</button>
         <script>
-            f = () => {
+            var helyhtml =  ' <input id = "lol" class = "hidden1" ><p id = "text" class = "hidden1" ></p><button onclick="AddTitle()" type="button" class = "hidden1" >Go</button><br>'
+
+            AddTitle = () => {
                 console.log(document.getElementById("lol").value);
                 document.getElementById("text").innerHTML += "<br>" + document.getElementById("lol").value
             }
-            var input = document.getElementById("lol");
+            
 
-            // Execute a function when the user releases a key on the keyboard
-            input.addEventListener("keydown", function(event) {
-            // Number 13 is the "Enter" key on the keyboard
-            if (event.keyCode === 13) {
-                // Cancel the default action, if needed
-                event.preventDefault();
-                f()
+            AddHely = () => {
+                document.getElementById("whole").innerHTML += helyhtml 
+                var input = document.getElementById("lol");
+                input.addEventListener("keydown", function(event) {
+                    if (event.keyCode === 13) {
+                        event.preventDefault();
+                        AddTitle()
+                    }
+                });
             }
-            });
+
+
+
+            
 
         </script>
     </body>
