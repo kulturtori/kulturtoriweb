@@ -3,48 +3,83 @@
 <html>
     <head>
         <style>
-            * {margin: 0; padding: 0}
+            .textbody {
+                line-height: 5em;
+            }
+            .subdiv {
+                margin-left: 30px;
+            }
+            .subbtn {
+                margin-left: 30px;
+            }
         </style>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
-
     <body>
-        <div id = "whole">             
+        <div id="whole">
         </div>
-
-        <button class='btn btn-primary' onclick="AddHely()" type="button">+</button>
+            <button id="+" onclick="AddPlace(places)">
+                +
+            </button>
 
         <script>
+            var places = 0
+            var whole = document.getElementById("whole")
+            var placehtml1 = '"><input type="text" id="input'
+            var placehtml2 = '"><button onclick="AddTitle('
+            var subdivs = []
 
-            var helyhtml =  '<div class = "titleEdit"> <input  class = "input" >  <button  class="addtitle btn btn-primary " type="button" >Add Title</button><br></div> <h2 class = "text"> </h2>'
-
-            AddTitle = (index, inputs) => {
-                try {
-                    document.getElementsByClassName("text")[index].innerHTML += "<br>" + inputs[index].value
-                    document.getElementById("whole").removeChild(document.getElementsByClassName("titleEdit"))
-                } catch (e) {
-                    AddTitle(index, inputs)
-                }
-            }
-            
-            AddHely = () => {
-                document.getElementById("whole").innerHTML += helyhtml 
-                var inputs = document.getElementsByClassName("input");
-                var index = Object.keys(inputs).length - 1
-                console.log(document.getElementsByClassName("addtitle"))
-                document.getElementsByClassName("addtitle")[index].addEventListener("click", () =>{AddTitle(index, inputs)});
-                inputs[index].addEventListener("keydown", function(event) {
-                    if (event.keyCode === 13) {
-                        event.preventDefault();
-                        AddTitle(index, inputs)
+            AddPlace = (index) => {
+                var newdiv = '<div id = "div' + index + placehtml1 + index + placehtml2 + index + ')">Add Title!</button></div><h3 id="title' + index + '"></h3>' 
+                places += 1
+                whole.insertAdjacentHTML('beforeend', newdiv);
+                document.getElementById("input" + index).addEventListener('keypress', function (e) {
+                    var key = e.which || e.keyCode;
+                    if (key === 13) { // 13 is enter
+                        AddTitle(index)
                     }
                 });
+
             }
-         
-        </script>   
+
+            AddTitle = (index) => {
+                if(document.getElementById("input" + index).value.trim() == ""){
+                    alert("Légyszi adj meg nevet a helynek!")
+                } else {
+                    document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value
+                    document.getElementById("div" + index).remove()
+                    var subindex = 0
+                    document.getElementById("title" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><input id="subtitle' + index + '"><br><input size="50" class="textbody" id="textbody' + index + '"></div>')
+                    subdivs.push(0)
+                    document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button>')
+                }
+            }
+
+            AddSubdiv = (index) => {
+                console.log(index)
+                subdivs[index] +=1
+                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><input id="subtitle' + index + '"><br><input size="50" class="textbody" id="textbody' + index + '"></div><p></p>')
+                console.log(subdivs[index])
+            }
+
+
+
+
+
+            var map;
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: -34.397, lng: 150.644},
+                zoom: 8
+                });
+            }
+
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+        async defer></script>
 
     </body>
 
