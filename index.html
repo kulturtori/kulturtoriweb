@@ -104,6 +104,10 @@
                 document.getElementById("placediv" + index).remove()
             }
 
+            DelSubdiv = (index, subindex) => {
+                document.getElementById(index + "subdiv" + subindex).remove()
+            }
+
             AddTitle = (index) => {
                 if(document.getElementById("input" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
@@ -119,7 +123,7 @@
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
-                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
+                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
                         document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
