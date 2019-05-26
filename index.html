@@ -100,8 +100,14 @@
             }
 
             DelDiv = (index) => {
+
                 placeNames.remove(document.getElementById("title" + index).textContent)
                 document.getElementById("placediv" + index).remove()
+                if (typeof allMarkers[index] !== 'undefined')
+                    {if(movingMarkers == index){
+                        movingMarkers = -1
+                    }
+                    allMarkers[index].setMap(null)}
             }
 
             DelSubdiv = (index, subindex) => {
@@ -140,7 +146,7 @@
                 } else if(textbody == "") {
                     alert("Az üres vázlatpontoknak nincs sok értelme...")
                 } else {
-                    subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><br></div>')
+                    document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div>')
                     document.getElementById(index + "insubdiv" + subindex).remove()
                 }
             }
@@ -148,16 +154,15 @@
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
                 var subdiv = document.getElementById(index + "subdiv" + subindex)
-                subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><br></div>')
+                document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><p></p></div>')
                 document.getElementById(index + "datasubdiv" + subindex).remove()
             }
 
             var allMarkers = []
-            var movingMarkers = 0
+            var movingMarkers = -1
 
             AddLoc = (index) => {
-                console.log(movingMarkers)
-                if(movingMarkers == 0){
+                if(movingMarkers == -1){
                     var marker = new google.maps.Marker({
                         position: map.getCenter(),
                         draggable:true,
@@ -171,7 +176,7 @@
                     document.getElementById('title' + index).style.color = "red";
                     document.getElementById('addlocbtn' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
                     document.getElementById('addlocbtn' + index).remove()
-                    movingMarkers = 1
+                    movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
             Done = (index) => {
@@ -185,10 +190,10 @@
                 document.getElementById('title' + index).style.color = "black";
                 document.getElementById('done' + index).insertAdjacentHTML('afterend', '<button id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
                 document.getElementById('done' + index).remove()
-                movingMarkers = 0
+                movingMarkers = -1
             }
             ChangeLoc = (index) => {
-                if(movingMarkers == 0){
+                if(movingMarkers == -1){
                     var coords = allMarkers[index].getPosition()
                     allMarkers[index].setMap(null);
                     allMarkers[index] =  new google.maps.Marker({
@@ -201,11 +206,9 @@
                     });;
                     allMarkers[index].setMap(map);
                     document.getElementById('title' + index).style.color = "red";
-                    console.log(document.getElementById('changeloc' + index))
                     document.getElementById('changeloc' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
-                    console.log(document.getElementById('changeloc' + index))
                     document.getElementById('changeloc' + index).remove()
-                    movingMarkers = 1
+                    movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
             ChangeName = (index) => {
