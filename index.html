@@ -6,8 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8">
         <style>
-
-            
             textarea {
                 white-space: pre-wrap;
             }
@@ -44,11 +42,13 @@
                 position:fixed;
                 width: 55%;
                 height: 100%;
+                margin-right: 10px;
             }
             #sidebar {
                 position: fixed; 
                 height: 100%;
                 width: 100%;
+                margin-right: 10px;
             }
             .save{
                 margin-left: 80px;
@@ -76,8 +76,19 @@
             var subdivs = []
             var placeNames = []
 
+            Array.prototype.remove = function() {
+                var what, a = arguments, L = a.length, ax;
+                while (L && this.length) {
+                    what = a[--L];
+                    while ((ax = this.indexOf(what)) !== -1) {
+                        this.splice(ax, 1);
+                    }
+                }
+                return this;
+            };
+
             AddPlace = (index) => {
-                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + '")>Törlés</button></div>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -87,6 +98,12 @@
                     }
                 });
             }
+
+            DelDiv = (index) => {
+                placeNames.remove(document.getElementById("title" + index).textContent)
+                document.getElementById("placediv" + index).remove()
+            }
+
             AddTitle = (index) => {
                 if(document.getElementById("input" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
@@ -109,7 +126,7 @@
             }
             AddSubdiv = (index) => {
                 subdivs[index] +=1
-                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subdivs[index] + '"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div><p></p>')
+                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
