@@ -7,19 +7,13 @@
         <meta charset="utf-8">
         <style>
 
-            .lilmap {
-                float: right;
-                width:40%;
-            }
-
+            
             textarea {
                 white-space: pre-wrap;
             }
-
             p {
                 white-space: pre-wrap;
             }
-
             .subdiv {
                 margin-left: 30px;
             }
@@ -36,9 +30,6 @@
                 margin: 0;
                 margin-left: 15px;
                 padding: 0;
-            }
-            .row {
-                display: flex;
             }  
             .column {
                 float: left;
@@ -62,7 +53,6 @@
             .save{
                 margin-left: 80px;
             }
-
         </style>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -71,29 +61,22 @@
     </head>
     <body>
         <div class="column left">
-            <div>
                 <div id="whole">
                 </div>
                 <button id="+" onclick="AddPlace(places)">
                     +
                 </button>
-            </div>
-            <div class="lilmap">
 
-            </div>
         </div>
         <div id="sidebar"><div id="map" class="column right"></div></div>
          
         <script>
             var places = 0
             var whole = document.getElementById("whole")
-            var placehtml1 = '"><input type="text" id="input'
-            var placehtml2 = '"><button onclick="AddTitle('
             var subdivs = []
             var placeNames = []
-
             AddPlace = (index) => {
-                var newdiv = '<div id = "div' + index + placehtml1 + index + placehtml2 + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -102,9 +85,7 @@
                         AddTitle(index)
                     }
                 });
-
             }
-
             AddTitle = (index) => {
                 if(document.getElementById("input" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
@@ -114,23 +95,21 @@
                     }
                     else {
                         document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value.trim()
+                        document.getElementById("title" + index).insertAdjacentHTML('afterend', '<button id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
                         document.getElementById("title" + index).getBoundingClientRect().bottom
-                        document.getElementsByClassName('lilmap')[0].insertAdjacentHTML ('beforeend', '<div id="map" style="margin-top: ' + document.getElementById("title" + index).getBoundingClientRect().bottom + '"></div>')
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
-                        document.getElementById("title" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
+                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
                         document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
             }
-
             AddSubdiv = (index) => {
                 subdivs[index] +=1
                 document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subdivs[index] + '"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div><p></p>')
             }
-
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
                 var textbody = document.getElementById(index + "textarea" + subindex).value.trim()
@@ -144,18 +123,70 @@
                     document.getElementById(index + "insubdiv" + subindex).remove()
                 }
             }
-
             EditBox = (index, subindex) => {
-                console.log(document.getElementById(index + "subtitle" + subindex))
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
                 var subdiv = document.getElementById(index + "subdiv" + subindex)
-                subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button><br></div>')
+                subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><br></div>')
                 document.getElementById(index + "datasubdiv" + subindex).remove()
             }
 
-            id="' + index + 'subtitlein' + subindex + '"
+            var allMarkers = []
+            var movingMarkers = 0
 
+            AddLoc = (index) => {
+                console.log(movingMarkers)
+                if(movingMarkers == 0){
+                    var marker = new google.maps.Marker({
+                        position: map.getCenter(),
+                        draggable:true,
+                        title: document.getElementById("title" + index).textContent,
+                        icon: {
+                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        }
+                    });
+                    allMarkers[index] = marker
+                    allMarkers[index].setMap(map);
+                    document.getElementById('title' + index).style.color = "red";
+                    document.getElementById('addlocbtn' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
+                    document.getElementById('addlocbtn' + index).remove()
+                    movingMarkers = 1
+                } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
+            }
+            Done = (index) => {
+                var coords = allMarkers[index].getPosition()
+                allMarkers[index].setMap(null);
+                allMarkers[index] =  new google.maps.Marker({
+                    position: coords,
+                    title: document.getElementById("title" + index).textContent,
+                });;
+                allMarkers[index].setMap(map);
+                document.getElementById('title' + index).style.color = "black";
+                document.getElementById('done' + index).insertAdjacentHTML('afterend', '<button id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
+                document.getElementById('done' + index).remove()
+                movingMarkers = 0
+            }
+            ChangeLoc = (index) => {
+                if(movingMarkers == 0){
+                    var coords = allMarkers[index].getPosition()
+                    allMarkers[index].setMap(null);
+                    allMarkers[index] =  new google.maps.Marker({
+                        position: coords,
+                        draggable:true,
+                        title: document.getElementById("title" + index).textContent,
+                        icon: {
+                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        }
+                    });;
+                    allMarkers[index].setMap(map);
+                    document.getElementById('title' + index).style.color = "red";
+                    console.log(document.getElementById('changeloc' + index))
+                    document.getElementById('changeloc' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
+                    console.log(document.getElementById('changeloc' + index))
+                    document.getElementById('changeloc' + index).remove()
+                    movingMarkers = 1
+                } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
+            }
 
 
             var map;
@@ -165,10 +196,14 @@
                     zoom: 6,
                     gestureHandling: 'cooperative',
                 };
-                map = new google.maps.Map(document.getElementById('map'), mainmap);
 
+                map = new google.maps.Map(document.getElementById('map'), mainmap);
+                
             }
 
+            
+
+            
         </script>
         <script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuqaXh0V02aV8bK3Km3vadDHqcepeTzcU&callback=initMap"></script>
 
