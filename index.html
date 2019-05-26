@@ -2,16 +2,67 @@
 
 <html>
     <head>
+        <title>Kultúrtöri Vázlatkészítő</title>
+        <meta name="viewport" content="initial-scale=1.0">
+        <meta charset="utf-8">
         <style>
-            .textbody {
-                line-height: 5em;
+
+            .lilmap {
+                float: right;
+                width:40%;
             }
+
+            textarea {
+                white-space: pre-wrap;
+            }
+
+            p {
+                white-space: pre-wrap;
+            }
+
             .subdiv {
                 margin-left: 30px;
             }
             .subbtn {
                 margin-left: 30px;
             }
+            #map {
+                height: 100%;
+                float: right;
+                width: 50%;
+            }
+            html, body {
+                height: 100%;
+                margin: 0;
+                margin-left: 15px;
+                padding: 0;
+            }
+            .row {
+                display: flex;
+            }  
+            .column {
+                float: left;
+            }
+            .left {
+                margin-top: 15px;
+                width: 40%;
+                position:relative; 
+                z-index:2;
+            }             
+            .right {
+                position:fixed;
+                width: 55%;
+                height: 100%;
+            }
+            #sidebar {
+                position: fixed; 
+                height: 100%;
+                width: 100%;
+            }
+            .save{
+                margin-left: 80px;
+            }
+
         </style>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -19,21 +70,30 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
     <body>
-        <div id="whole">
-        </div>
-            <button id="+" onclick="AddPlace(places)">
-                +
-            </button>
+        <div class="column left">
+            <div>
+                <div id="whole">
+                </div>
+                <button id="+" onclick="AddPlace(places)">
+                    +
+                </button>
+            </div>
+            <div class="lilmap">
 
+            </div>
+        </div>
+        <div id="sidebar"><div id="map" class="column right"></div></div>
+         
         <script>
             var places = 0
             var whole = document.getElementById("whole")
             var placehtml1 = '"><input type="text" id="input'
             var placehtml2 = '"><button onclick="AddTitle('
             var subdivs = []
+            var placeNames = []
 
             AddPlace = (index) => {
-                var newdiv = '<div id = "div' + index + placehtml1 + index + placehtml2 + index + ')">Add Title!</button></div><h3 id="title' + index + '"></h3>' 
+                var newdiv = '<div id = "div' + index + placehtml1 + index + placehtml2 + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -49,37 +109,68 @@
                 if(document.getElementById("input" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
                 } else {
-                    document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value
-                    document.getElementById("div" + index).remove()
-                    var subindex = 0
-                    document.getElementById("title" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><input id="subtitle' + index + '"><br><input size="50" class="textbody" id="textbody' + index + '"></div>')
-                    subdivs.push(0)
-                    document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button>')
+                    if(placeNames.includes(document.getElementById("input" + index).value.trim())){
+                        alert("Ilyen nevű hely már létezik. Kérlek, adj meg más nevet!")
+                    }
+                    else {
+                        document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value.trim()
+                        placeNames.push(document.getElementById("title" + index).innerHTML)
+                        document.getElementById("title" + index).getBoundingClientRect().bottom
+                        document.getElementsByClassName('lilmap')[0].insertAdjacentHTML ('beforeend', '<div id="map" style="margin-top: ' + document.getElementById("title" + index).getBoundingClientRect().bottom + '"></div>')
+                        document.getElementById("div" + index).remove()
+                        var subindex = 0
+                        subdivs.push(0)
+                        document.getElementById("title" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
+                        document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
+                    }       
                 }
             }
 
             AddSubdiv = (index) => {
-                console.log(index)
                 subdivs[index] +=1
-                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><input id="subtitle' + index + '"><br><input size="50" class="textbody" id="textbody' + index + '"></div><p></p>')
-                console.log(subdivs[index])
+                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subdivs[index] + '"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div><p></p>')
             }
 
+            SaveBox = (index, subindex) => {
+                var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
+                var textbody = document.getElementById(index + "textarea" + subindex).value.trim()
+                var subdiv = document.getElementById(index + "subdiv" + subindex)
+                if(subtitle == "") {
+                    alert("Kérlek, nevezd el a vázlatpontod!")
+                } else if(textbody == "") {
+                    alert("Az üres vázlatpontoknak nincs sok értelme...")
+                } else {
+                    subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><br></div>')
+                    document.getElementById(index + "insubdiv" + subindex).remove()
+                }
+            }
 
+            EditBox = (index, subindex) => {
+                console.log(document.getElementById(index + "subtitle" + subindex))
+                var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
+                var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
+                var subdiv = document.getElementById(index + "subdiv" + subindex)
+                subdiv.insertAdjacentHTML('beforeend', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button><br></div>')
+                document.getElementById(index + "datasubdiv" + subindex).remove()
+            }
+
+            id="' + index + 'subtitlein' + subindex + '"
 
 
 
             var map;
             function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: -34.397, lng: 150.644},
-                zoom: 8
-                });
+                var mainmap = {               
+                    center: {lat: 49.461, lng: 11.062},
+                    zoom: 6,
+                    gestureHandling: 'cooperative',
+                };
+                map = new google.maps.Map(document.getElementById('map'), mainmap);
+
             }
 
         </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
-        async defer></script>
+        <script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuqaXh0V02aV8bK3Km3vadDHqcepeTzcU&callback=initMap"></script>
 
     </body>
 
