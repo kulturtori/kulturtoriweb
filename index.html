@@ -100,18 +100,19 @@
             }
 
             DelDiv = (index) => {
-
-                placeNames.remove(document.getElementById("title" + index).textContent)
-                document.getElementById("placediv" + index).remove()
-                if (typeof allMarkers[index] !== 'undefined')
-                    {if(movingMarkers == index){
-                        movingMarkers = -1
-                    }
-                    allMarkers[index].setMap(null)}
+                if(confirm('Biztos törlöd ezt a helyet?'))
+                    {placeNames.remove(document.getElementById("title" + index).textContent)
+                    document.getElementById("placediv" + index).remove()
+                    if (typeof allMarkers[index] !== 'undefined')
+                        {if(movingMarkers == index){
+                            movingMarkers = -1
+                        }
+                        allMarkers[index].setMap(null)}}
             }
 
             DelSubdiv = (index, subindex) => {
-                document.getElementById(index + "subdiv" + subindex).remove()
+                if(confirm('Biztos törlöd ezt a vázlatpontot?'))
+                    {document.getElementById(index + "subdiv" + subindex).remove()}
             }
 
             AddTitle = (index) => {
