@@ -75,8 +75,9 @@
             var whole = document.getElementById("whole")
             var subdivs = []
             var placeNames = []
+
             AddPlace = (index) => {
-                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2></div>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + '")>Törlés</button></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -101,7 +102,7 @@
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
-                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
+                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div></div>')
                         document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
