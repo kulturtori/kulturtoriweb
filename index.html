@@ -119,7 +119,6 @@
                         document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value.trim()
                         document.getElementById("title" + index).insertAdjacentHTML('afterend', '<button id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
-                        document.getElementById("title" + index).getBoundingClientRect().bottom
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
@@ -208,6 +207,36 @@
                     document.getElementById('changeloc' + index).remove()
                     movingMarkers = 1
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
+            }
+            ChangeName = (index) => {
+                
+                document.getElementById("namebtn" + index).remove()
+                document.getElementById("addlocbtn" + index).remove()
+                document.getElementById("addlocbtnbr" + index).remove()
+                var title = document.getElementById("title" + index).textContent.trim()
+                document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
+                document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
+                placeNames.remove(document.getElementById("title" + index).textContent)
+                document.getElementById("title" + index).remove()
+            }
+
+            SaveName = (index) => {
+                if(document.getElementById("namein" + index).value.trim() == ""){
+                    alert("Légyszi adj meg nevet a helynek!")
+                } else {
+                    if(placeNames.includes(document.getElementById("namein" + index).value.trim())){
+                        alert("Ilyen nevű hely már létezik. Kérlek, adj meg más nevet!")
+                    }
+                    else {
+                        document.getElementById("savename" + index).remove()
+                        var title = document.getElementById("namein" + index).value.trim()
+                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("namein" + index).insertAdjacentHTML('afterend','<h2 id="title' + index + '">' + title + '</h2>')
+                        placeNames.push(document.getElementById("title" + index).innerHTML)
+                        document.getElementById("namein" + index).remove()
+                        document.getElementById("maci" + index).remove()
+                    }
+                }
             }
 
 
