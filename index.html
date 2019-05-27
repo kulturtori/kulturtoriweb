@@ -89,7 +89,7 @@
             };
 
             AddPlace = (index) => {
-                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '" style ="margin-right: 10px"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
