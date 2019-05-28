@@ -108,8 +108,11 @@
                                     file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
                                 }                                
                             }
-                        }
+                        }                    
+                        
                     }
+                    var filename = prompt('Adj meg egy EGYEDI nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '')
+                    saveToFirebase(file, filename);
                 }
             }
 
@@ -284,12 +287,48 @@
                 map = new google.maps.Map(document.getElementById('map'), mainmap);
                 
             }
+            
+            function saveToFirebase(file, filename) {
+                var fileWithName = {
+                    file: file,
+                    filename: filename,
+                };
+
+                firebase.database().ref('Vázlatok').push().set(fileWithName)
+                    .then(function(snapshot) {
+                        alert("yiy"); // some success method
+                    }, function(error) {
+                        console.log('error' + error);
+                        alert("ohshitno"); // some error method
+                    });
+            }
 
             
 
             
         </script>
+        
         <script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuqaXh0V02aV8bK3Km3vadDHqcepeTzcU&callback=initMap"></script>
+                <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="https://www.gstatic.com/firebasejs/6.0.2/firebase.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+            https://firebase.google.com/docs/web/setup#reserved-urls -->
+
+        <!-- Initialize Firebase -->
+        <script src="/__/firebase/init.js"></script>
+        <script>
+            const firebaseConfig = {
+                apiKey: "AIzaSyCmUdDWJ1NarfD7JhebXOcTd7M792HQOnc",
+                authDomain: "kulturtoriweb.firebaseapp.com",
+                databaseURL: "https://kulturtoriweb.firebaseio.com",
+                projectId: "kulturtoriweb",
+                storageBucket: "kulturtoriweb.appspot.com",
+                messagingSenderId: "111548745505",
+                appId: "1:111548745505:web:d39bf8a4255cccb9"
+            }; 
+            firebase.initializeApp(firebaseConfig)
+        </script>
 
     </body>
 
