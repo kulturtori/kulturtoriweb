@@ -66,6 +66,10 @@
                 <button id="+" onclick="AddPlace(places)">
                     +
                 </button>
+                <p></p>
+                <button onclick="SaveAll()">
+                    A vázlat mentése
+                </button>
 
         </div>
         <div id="sidebar"><div id="map" class="column right"></div></div>
@@ -75,7 +79,6 @@
             var whole = document.getElementById("whole")
             var subdivs = []
             var placeNames = []
-            var subtitles = []
 
             Array.prototype.remove = function() {
                 var what, a = arguments, L = a.length, ax;
@@ -88,8 +91,30 @@
                 return this;
             };
 
+            SaveAll = () => {
+                if(document.getElementsByTagName("input").length != 0 || document.getElementsByTagName("textarea").length != 0) {
+                    alert("Még vannak nyitva szerkesztődobozok az oldalon. Kérlek, a mentéshez ezeket töröld, vagy mentsd!")
+                } else {
+                    var file = {}
+                    for(var i=0; i<subdivs.length; i++){
+                        if(document.getElementById("title" + i) !== undefined){
+                            file[document.getElementById("title" + i).textContent] = {loc:{},stuff:[]}
+                            if(allMarkers[i] !== undefined){
+                                file[document.getElementById("title" + i).textContent].loc.lat = allMarkers[i].getPosition().lat();
+                                file[document.getElementById("title" + i).textContent].loc.lng = allMarkers[i].getPosition().lng();
+                            }
+                            for(var j = 0; j<=subdivs[i]; j++){                                                             
+                                if(document.getElementById(i + "subtitle" + j) !== undefined){                                    
+                                    file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
+                                }                                
+                            }
+                        }
+                    }
+                }
+            }
+
             AddPlace = (index) => {
-                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '" style ="margin-right: 10px"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -112,10 +137,8 @@
             }
 
             DelSubdiv = (index, subindex) => {
-                if(confirm('Biztos törlöd ezt a vázlatpontot?')){
-                    subtitles[index].remove(document.getElementById(index + "subtitle" + subindex).textContent.trim())
-                    document.getElementById(index + "subdiv" + subindex).remove()
-                }                    
+                if(confirm('Biztos törlöd ezt a vázlatpontot?'))
+                    {document.getElementById(index + "subdiv" + subindex).remove()}
             }
 
             AddTitle = (index) => {
@@ -133,41 +156,36 @@
                         var subindex = 0
                         subdivs.push(0)
                         document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
-                        subtitles[index] = []
                         document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
             }
-
             AddSubdiv = (index) => {
+                if (subdivs[index] === undefined){
+                    subdivs[index] = -1;
+                }
                 subdivs[index] +=1
-                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
+                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
-
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
                 var textbody = document.getElementById(index + "textarea" + subindex).value.trim()
                 var subdiv = document.getElementById(index + "subdiv" + subindex)
                 if(subtitle == "") {
                     alert("Kérlek, nevezd el a vázlatpontod!")
-                } else if(subtitles[index].includes(subtitle)) {
-                    alert("Ilyen nevű vázlatpont már létezik ezen a helyen. Kérlek, adj meg más nevet!")
                 } else if(textbody == "") {
                     alert("Az üres vázlatpontoknak nincs sok értelme...")
                 } else {
                     document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div>')
                     document.getElementById(index + "insubdiv" + subindex).remove()
-                    subtitles[index].push(subtitle)
                 }
             }
-
             EditBox = (index, subindex) => {
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
                 var subdiv = document.getElementById(index + "subdiv" + subindex)
                 document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><p></p></div>')
                 document.getElementById(index + "datasubdiv" + subindex).remove()
-                subtitles[index].remove(subtitlein)
             }
 
             var allMarkers = []
@@ -191,7 +209,6 @@
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
-
             Done = (index) => {
                 var coords = allMarkers[index].getPosition()
                 allMarkers[index].setMap(null);
@@ -205,7 +222,6 @@
                 document.getElementById('done' + index).remove()
                 movingMarkers = -1
             }
-
             ChangeLoc = (index) => {
                 if(movingMarkers == -1){
                     var coords = allMarkers[index].getPosition()
@@ -225,8 +241,8 @@
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
-
-            ChangeName = (index) => {                
+            ChangeName = (index) => {
+                
                 document.getElementById("namebtn" + index).remove()
                 document.getElementById("addlocbtn" + index).remove()
                 document.getElementById("addlocbtnbr" + index).remove()
@@ -256,6 +272,7 @@
                 }
             }
 
+
             var map;
             function initMap() {
                 var mainmap = {               
@@ -263,9 +280,13 @@
                     zoom: 6,
                     gestureHandling: 'cooperative',
                 };
+
                 map = new google.maps.Map(document.getElementById('map'), mainmap);
                 
-            }            
+            }
+
+            
+
             
         </script>
         <script  async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuqaXh0V02aV8bK3Km3vadDHqcepeTzcU&callback=initMap"></script>
