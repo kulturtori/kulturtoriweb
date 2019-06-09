@@ -28,6 +28,7 @@
                 margin: 0;
                 margin-left: 15px;
                 padding: 0;
+                margin-bottom: 30px;
             }  
             .column {
                 float: left;
@@ -67,18 +68,37 @@
                     +
                 </button>
                 <p></p>
-                <button onclick="SaveAll()">
+                <button onclick="SaveAll()" >
                     A vázlat mentése
                 </button>
+                <button onclick="Load()">
+                        Vázlat betöltése
+                </button>
+                <p></p>
 
         </div>
         <div id="sidebar"><div id="map" class="column right"></div></div>
          
-        <script>
+        <script defer="defer">
             var places = 0
             var whole = document.getElementById("whole")
             var subdivs = []
             var placeNames = []
+
+            console.log(document.getElementsByTagName("button"))
+
+            /*for(var i = 0; i < Object.keys(document.getElementsByTagName("button")).length; i++) {
+                document.getElementsByTagName("button")[i].classList.add("btn");
+                document.getElementsByTagName("button")[i].classList.add("btn-outline-primary");
+                document.getElementsByTagName("button")[i].onclick += ", NiceButton()" ;
+            }
+            function nicebutton(){
+                for(var i = 0; i < Object.keys(document.getElementsByTagName("button")).length; i++) {
+                    document.getElementsByTagName("button")[i].classList.add("btn");
+                    document.getElementsByTagName("button")[i].classList.add("btn-outline-primary");
+                }
+            }*/
+        
 
             Array.prototype.remove = function() {
                 var what, a = arguments, L = a.length, ax;
@@ -111,8 +131,51 @@
                         }                    
                         
                     }
-                    var filename = prompt('Adj meg egy EGYEDI nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '')
-                    saveToFirebase(file, filename);
+                    var filename = prompt('Adj meg egy nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '')
+                    pswd = Math.floor(Math.random() * 9000) + 1000;                    
+                    var vazlatokRef = database.ref('Vázlatok');
+                    var usedPswds = []
+                    vazlatokRef.on('value', function(snapshot) {
+                        snapshot.forEach(function(childSnapshot) {
+                        var childData = childSnapshot.val();
+                        if(childData.filename == filename){
+                            usedPswds.push(childData.pswd)
+                        }
+                        });
+                    });
+                    pswd = CheckPswd(pswd, usedPswds);
+                    alert("A mentésedhez biztonsági okok miatt egy kód is tartozik, ez egy négyjegyű szám. Ezt is jegyezd meg, enélkül szintén nem tudsz hozzáférni a vázlatodhoz. A kódod pedig: " + pswd)
+                    saveToFirebase(file, filename, pswd);
+                }
+            }
+
+            CheckPswd = (pswd, usedPswds) => {
+                if (usedPswds.includes(pswd)){
+                    pswd = Math.floor(Math.random() * 9000) + 1000;
+                    return CheckPswd(pswd, usedPswds);
+                } else{
+                    return pswd;
+                }
+            }
+
+            Load = async () => {
+                var vazlatokRef = database.ref('Vázlatok');
+                var potentialMatches = []
+                var file = 0
+                filename = prompt('Mi a betöltendő vázlatod mentési neve?', '')
+                await vazlatokRef.on('value', function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        var childData = childSnapshot.val();
+                        if(childData.filename == filename){
+                            potentialMatches.push(childData)
+
+                        }
+                    });
+                });
+                console.log(potentialMatches)
+                pswd = prompt('Mi a betöltendő vázlatodhoz tartozó kód? (Egy négyjegyű szám, amit mentéskor kaptál)', '')
+                for(i=0; i <= potentialMatches.length; i++){
+                    console.log(potentialMatches[i])
                 }
             }
 
@@ -126,6 +189,7 @@
                         AddTitle(index)
                     }
                 });
+                
             }
 
             DelDiv = (index) => {
@@ -163,6 +227,7 @@
                     }       
                 }
             }
+
             AddSubdiv = (index) => {
                 if (subdivs[index] === undefined){
                     subdivs[index] = -1;
@@ -170,6 +235,7 @@
                 subdivs[index] +=1
                 document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
+
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
                 var textbody = document.getElementById(index + "textarea" + subindex).value.trim()
@@ -183,6 +249,7 @@
                     document.getElementById(index + "insubdiv" + subindex).remove()
                 }
             }
+
             EditBox = (index, subindex) => {
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
@@ -212,6 +279,7 @@
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
+
             Done = (index) => {
                 var coords = allMarkers[index].getPosition()
                 allMarkers[index].setMap(null);
@@ -225,6 +293,7 @@
                 document.getElementById('done' + index).remove()
                 movingMarkers = -1
             }
+
             ChangeLoc = (index) => {
                 if(movingMarkers == -1){
                     var coords = allMarkers[index].getPosition()
@@ -288,10 +357,11 @@
                 
             }
             
-            function saveToFirebase(file, filename) {
+            function saveToFirebase(file, filename, pswd) {
                 var fileWithName = {
                     file: file,
                     filename: filename,
+                    pswd: pswd,
                 };
 
                 firebase.database().ref('Vázlatok').push().set(fileWithName)
@@ -316,7 +386,6 @@
             https://firebase.google.com/docs/web/setup#reserved-urls -->
 
         <!-- Initialize Firebase -->
-        <script src="/__/firebase/init.js"></script>
         <script>
             const firebaseConfig = {
                 apiKey: "AIzaSyCmUdDWJ1NarfD7JhebXOcTd7M792HQOnc",
@@ -328,6 +397,8 @@
                 appId: "1:111548745505:web:d39bf8a4255cccb9"
             }; 
             firebase.initializeApp(firebaseConfig)
+            var database = firebase.database();
+            
         </script>
 
     </body>
