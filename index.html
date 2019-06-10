@@ -109,14 +109,16 @@
                     } else {
                         var file = {}
                         for(var i=0; i<subdivs.length; i++){
-                            if(document.getElementById("title" + i) !== undefined){
+                            if(document.getElementById("title" + i) != undefined){
+                                console.log(document.getElementById("title" + i))
                                 file[document.getElementById("title" + i).textContent] = {loc:{},stuff:[]}
                                 if(allMarkers[i] !== undefined){
                                     file[document.getElementById("title" + i).textContent].loc.lat = allMarkers[i].getPosition().lat();
                                     file[document.getElementById("title" + i).textContent].loc.lng = allMarkers[i].getPosition().lng();
                                 }
                                 for(var j = 0; j<=subdivs[i]; j++){                                                             
-                                    if(document.getElementById(i + "subtitle" + j) !== undefined){                                    
+                                    if(document.getElementById(i + "subtitle" + j) != undefined){
+                                        console.log(document.getElementById(i + "subtitle" + j))                  
                                         file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
                                     }                                
                                 }
@@ -285,7 +287,7 @@
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
-                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
+                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subindex + '" onclick="DelSubdiv(' + index + ', ' + subindex + ')">Törlés</button><p></p></div>')
                         document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button class="btn btn-primary subbtn" id="subbtn' + index + '" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
