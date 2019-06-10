@@ -69,9 +69,9 @@
                 </button>
                 <p></p>
                 <button onclick="SaveAll()" >
-                    A vázlat mentése
+                    Új vázlat mentése
                 </button>
-                <button onclick="Load()">
+                <button onclick="Load()" id="loadBtn">
                         Vázlat betöltése
                 </button>
                 <p></p>
@@ -80,26 +80,12 @@
         <div id="sidebar"><div id="map" class="column right"></div></div>
          
         <script defer="defer">
+            var loaded = 0
             var places = 0
             var whole = document.getElementById("whole")
             var subdivs = []
             var placeNames = []
-
-            console.log(document.getElementsByTagName("button"))
-
-            /*for(var i = 0; i < Object.keys(document.getElementsByTagName("button")).length; i++) {
-                document.getElementsByTagName("button")[i].classList.add("btn");
-                document.getElementsByTagName("button")[i].classList.add("btn-outline-primary");
-                document.getElementsByTagName("button")[i].onclick += ", NiceButton()" ;
-            }
-            function nicebutton(){
-                for(var i = 0; i < Object.keys(document.getElementsByTagName("button")).length; i++) {
-                    document.getElementsByTagName("button")[i].classList.add("btn");
-                    document.getElementsByTagName("button")[i].classList.add("btn-outline-primary");
-                }
-            }*/
         
-
             Array.prototype.remove = function() {
                 var what, a = arguments, L = a.length, ax;
                 while (L && this.length) {
@@ -110,8 +96,128 @@
                 }
                 return this;
             };
-
             SaveAll = () => {
+                if(document.getElementsByTagName("input").length != 0 || document.getElementsByTagName("textarea").length != 0) {
+                    alert("Még vannak nyitva szerkesztődobozok az oldalon. Kérlek, a mentéshez ezeket töröld, vagy mentsd!")
+                } else {
+                    var filename = prompt('Adj meg egy nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '').trim()
+                    if (filename == "") {
+                        alert("Kérlek adj meg egy nevet a mentésednek!")
+                        SaveAll()
+                    } else {
+                        var file = {}
+                        for(var i=0; i<subdivs.length; i++){
+                            if(document.getElementById("title" + i) !== undefined){
+                                file[document.getElementById("title" + i).textContent] = {loc:{},stuff:[]}
+                                if(allMarkers[i] !== undefined){
+                                    file[document.getElementById("title" + i).textContent].loc.lat = allMarkers[i].getPosition().lat();
+                                    file[document.getElementById("title" + i).textContent].loc.lng = allMarkers[i].getPosition().lng();
+                                }
+                                for(var j = 0; j<=subdivs[i]; j++){                                                             
+                                    if(document.getElementById(i + "subtitle" + j) !== undefined){                                    
+                                        file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
+                                    }                                
+                                }
+                            }     
+                        }
+                        pswd = Math.floor(Math.random() * 9000) + 1000;                    
+                        var vazlatokRef = database.ref('Vázlatok');
+                        var usedPswds = []
+                        vazlatokRef.on('value', function(snapshot) {
+                            snapshot.forEach(function(childSnapshot) {
+                            var childData = childSnapshot.val();
+                            if(childData.filename == filename){
+                                usedPswds.push(childData.pswd)
+                            }
+                            });
+                        });
+                        pswd = CheckPswd(pswd, usedPswds);
+                        alert("A mentésedhez biztonsági okok miatt egy kód is tartozik, ez egy négyjegyű szám. Ezt is jegyezd meg, enélkül szintén nem tudsz hozzáférni a vázlatodhoz. A kódod pedig: " + pswd)
+                        saveToFirebase(file, filename, pswd);
+                    }
+                }
+            }
+            CheckPswd = (pswd, usedPswds) => {
+                if (usedPswds.includes(pswd)){
+                    pswd = Math.floor(Math.random() * 9000) + 1000;
+                    return CheckPswd(pswd, usedPswds);
+                } else{
+                    return pswd;
+                }
+            }
+            Load = async () => {
+                if(confirm("Biztos betöltesz egy másik vázlatot? Itt minden nem mentett változtatás elvész.")) {
+                    var vazlatokRef = database.ref('Vázlatok');
+                    filename = prompt('Mi a betöltendő vázlatod mentési neve?', '')
+                    var found = 0
+                    await vazlatokRef.on('value', function(snapshot) {
+                        snapshot.forEach(function(childSnapshot) {
+                            var childData = childSnapshot.val();
+                            if(found == 0){
+                                if(childData.filename == filename){
+                                    if(childData.pswd == pswd){
+                                        found = 1;
+                                        LoadActive(childData);
+                                    } else {
+                                        alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
+                                    }
+                                }
+                            }
+                        });
+                        if(found == 0) {
+                            alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
+                        }
+                    });
+                    pswd = prompt('Mi a betöltendő vázlatodhoz tartozó kód? (Egy négyjegyű szám, amit mentéskor kaptál)', '')
+                }
+            }
+            var currentFilename = ""
+            var currentPswd = ""
+            LoadActive = (file) => {
+                if(loaded == 0) {
+                    document.getElementById("loadBtn").insertAdjacentHTML('afterend', '<p></p><button onclick="SaveEdits()">Módosítások mentése</button>')
+                }
+                loaded = 1
+                currentFilename = file.filename
+                currentPswd = file.pswd
+                for(var index=0; index<places; index++) {
+                    placeNames.remove(document.getElementById("title" + index).textContent)
+                    document.getElementById("placediv" + index).remove()
+                    if (typeof allMarkers[index] !== 'undefined')
+                        {if(movingMarkers == index){
+                            movingMarkers = -1
+                        }
+                        allMarkers[index].setMap(null)}
+                }
+                places = 0
+                subdivs = []
+                Object.keys(file.file).forEach(function(key,index) {
+                    // key: the name of the object key
+                    // index: the ordinal position of the key within the object 
+                    document.getElementById("whole").insertAdjacentHTML("beforeend", "<div id='placediv" + index + "'><h2 id='title" + index + "'>" + key + "</h2><button id='namebtn" + index + "' onclick='ChangeName(" + index + ")'>Helynév módosítása</button></div>")
+                    
+                    if(file.file[key].hasOwnProperty('loc')){
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button><p id="addlocbtnbr' + index + '"></p>')
+                        var marker = new google.maps.Marker({
+                            position: file.file[key].loc,
+                            title: document.getElementById("title" + index).textContent    
+                        });
+                        allMarkers[index] = marker
+                        allMarkers[index].setMap(map); 
+                    } else {
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                    }
+                    places += 1
+                    subdivs[index] = -1
+                    Object.keys(file.file[key].stuff).forEach(function(subkey,subindex) {
+                        var stuff = file.file[key].stuff[subkey]
+                        subdivs[index] += 1
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<div class="subdiv" id="' + index + 'subdiv' + subindex + '"><p></p><div id="' + index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + stuff.ttl + '</h4><p id="' + index + 'textbody' + subindex + '">' + stuff.text + '</p><button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div><button id="' + index + 'delsubdiv' + subindex + '" onclick="DelSubdiv(' + index + ', ' + subindex + ')">Törlés</button><p></p></div><p></p>')
+                    })
+                    document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p>')
+                });
+            }
+            SaveEdits = () => {
                 if(document.getElementsByTagName("input").length != 0 || document.getElementsByTagName("textarea").length != 0) {
                     alert("Még vannak nyitva szerkesztődobozok az oldalon. Kérlek, a mentéshez ezeket töröld, vagy mentsd!")
                 } else {
@@ -124,61 +230,27 @@
                                 file[document.getElementById("title" + i).textContent].loc.lng = allMarkers[i].getPosition().lng();
                             }
                             for(var j = 0; j<=subdivs[i]; j++){                                                             
-                                if(document.getElementById(i + "subtitle" + j) !== undefined){                                    
+                                if(document.getElementById(i + "subtitle" + j) !== undefined){                        
                                     file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
                                 }                                
                             }
-                        }                    
-                        
+                        }     
                     }
-                    var filename = prompt('Adj meg egy nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '')
-                    pswd = Math.floor(Math.random() * 9000) + 1000;                    
                     var vazlatokRef = database.ref('Vázlatok');
-                    var usedPswds = []
                     vazlatokRef.on('value', function(snapshot) {
                         snapshot.forEach(function(childSnapshot) {
-                        var childData = childSnapshot.val();
-                        if(childData.filename == filename){
-                            usedPswds.push(childData.pswd)
-                        }
+                            var childData = childSnapshot.val();
+                            if(childData.filename == currentFilename){
+                                if(childData.pswd == currentPswd){
+                                    console.log(childData.ref())
+                                } 
+                            }
+                            
                         });
                     });
-                    pswd = CheckPswd(pswd, usedPswds);
-                    alert("A mentésedhez biztonsági okok miatt egy kód is tartozik, ez egy négyjegyű szám. Ezt is jegyezd meg, enélkül szintén nem tudsz hozzáférni a vázlatodhoz. A kódod pedig: " + pswd)
                     saveToFirebase(file, filename, pswd);
                 }
             }
-
-            CheckPswd = (pswd, usedPswds) => {
-                if (usedPswds.includes(pswd)){
-                    pswd = Math.floor(Math.random() * 9000) + 1000;
-                    return CheckPswd(pswd, usedPswds);
-                } else{
-                    return pswd;
-                }
-            }
-
-            Load = async () => {
-                var vazlatokRef = database.ref('Vázlatok');
-                var potentialMatches = []
-                var file = 0
-                filename = prompt('Mi a betöltendő vázlatod mentési neve?', '')
-                await vazlatokRef.on('value', function(snapshot) {
-                    snapshot.forEach(function(childSnapshot) {
-                        var childData = childSnapshot.val();
-                        if(childData.filename == filename){
-                            potentialMatches.push(childData)
-
-                        }
-                    });
-                });
-                console.log(potentialMatches)
-                pswd = prompt('Mi a betöltendő vázlatodhoz tartozó kód? (Egy négyjegyű szám, amit mentéskor kaptál)', '')
-                for(i=0; i <= potentialMatches.length; i++){
-                    console.log(potentialMatches[i])
-                }
-            }
-
             AddPlace = (index) => {
                 var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
@@ -191,23 +263,21 @@
                 });
                 
             }
-
             DelDiv = (index) => {
                 if(confirm('Biztos törlöd ezt a helyet?'))
                     {placeNames.remove(document.getElementById("title" + index).textContent)
                     document.getElementById("placediv" + index).remove()
+                    places -= 1
                     if (typeof allMarkers[index] !== 'undefined')
                         {if(movingMarkers == index){
                             movingMarkers = -1
                         }
                         allMarkers[index].setMap(null)}}
             }
-
             DelSubdiv = (index, subindex) => {
                 if(confirm('Biztos törlöd ezt a vázlatpontot?'))
                     {document.getElementById(index + "subdiv" + subindex).remove()}
             }
-
             AddTitle = (index) => {
                 if(document.getElementById("input" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
@@ -227,7 +297,6 @@
                     }       
                 }
             }
-
             AddSubdiv = (index) => {
                 if (subdivs[index] === undefined){
                     subdivs[index] = -1;
@@ -235,7 +304,6 @@
                 subdivs[index] +=1
                 document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
-
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
                 var textbody = document.getElementById(index + "textarea" + subindex).value.trim()
@@ -249,7 +317,6 @@
                     document.getElementById(index + "insubdiv" + subindex).remove()
                 }
             }
-
             EditBox = (index, subindex) => {
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
@@ -257,10 +324,8 @@
                 document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><p></p></div>')
                 document.getElementById(index + "datasubdiv" + subindex).remove()
             }
-
             var allMarkers = []
             var movingMarkers = -1
-
             AddLoc = (index) => {
                 if(movingMarkers == -1){
                     var marker = new google.maps.Marker({
@@ -279,7 +344,6 @@
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
-
             Done = (index) => {
                 var coords = allMarkers[index].getPosition()
                 allMarkers[index].setMap(null);
@@ -293,7 +357,6 @@
                 document.getElementById('done' + index).remove()
                 movingMarkers = -1
             }
-
             ChangeLoc = (index) => {
                 if(movingMarkers == -1){
                     var coords = allMarkers[index].getPosition()
@@ -324,7 +387,6 @@
                 placeNames.remove(document.getElementById("title" + index).textContent)
                 document.getElementById("title" + index).remove()
             }
-
             SaveName = (index) => {
                 if(document.getElementById("namein" + index).value.trim() == ""){
                     alert("Légyszi adj meg nevet a helynek!")
@@ -343,8 +405,6 @@
                     }
                 }
             }
-
-
             var map;
             function initMap() {
                 var mainmap = {               
@@ -352,7 +412,6 @@
                     zoom: 6,
                     gestureHandling: 'cooperative',
                 };
-
                 map = new google.maps.Map(document.getElementById('map'), mainmap);
                 
             }
@@ -363,18 +422,14 @@
                     filename: filename,
                     pswd: pswd,
                 };
-
                 firebase.database().ref('Vázlatok').push().set(fileWithName)
                     .then(function(snapshot) {
-                        alert("yiy"); // some success method
+                        alert("A mentés sikeres volt!"); // some success method
                     }, function(error) {
-                        console.log('error' + error);
                         alert("ohshitno"); // some error method
                     });
             }
-
             
-
             
         </script>
         
