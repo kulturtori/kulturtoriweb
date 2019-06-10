@@ -241,6 +241,10 @@
                 }
             }
             AddPlace = (index) => {
+                if (subdivs[index] === undefined){
+                    subdivs[index] = -1;
+                }
+                subdivs[index] +=1
                 var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button class="btn btn-primary" onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button class="btn btn-primary" id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
@@ -291,6 +295,8 @@
                     subdivs[index] = -1;
                 }
                 subdivs[index] +=1
+                
+
                 document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
             SaveBox = (index, subindex) => {
