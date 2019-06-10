@@ -103,7 +103,7 @@
                     alert("Még vannak nyitva szerkesztődobozok az oldalon. Kérlek, a mentéshez ezeket töröld, vagy mentsd!")
                 } else {
                     var filename = prompt('Adj meg egy nevet a mentésednek! Jól jegyezd meg, mert csak ezzel éred majd el a vázlatod a telefonos alkalmazásból.', '').trim()
-                    if (filename == "") {
+                    if (filename == "" || filename == null) {
                         alert("Kérlek adj meg egy nevet a mentésednek!")
                         SaveAll()
                     } else {
