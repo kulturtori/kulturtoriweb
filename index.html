@@ -28,8 +28,7 @@
                 margin: 0;
                 margin-left: 15px;
                 padding: 0;
-                margin-bottom: 30px;
-            }  
+            }
             .column {
                 float: left;
             }
@@ -54,24 +53,27 @@
             .save{
                 margin-left: 80px;
             }
+            /*p, h2, h4{
+                color: white;
+            }*/
         </style>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
-    <body>
+    <body style="background-color: white">
         <div class="column left">
                 <div id="whole">
                 </div>
-                <button id="+" onclick="AddPlace(places)">
+                <button class="btn btn-primary" id="+" onclick="AddPlace(places)">
                     +
                 </button>
                 <p></p>
-                <button onclick="SaveAll()" >
+                <button class="btn btn-primary" onclick="SaveAll()">
                     Új vázlat mentése
                 </button>
-                <button onclick="Load()" id="loadBtn">
+                <button class="btn btn-primary" onclick="Load()" id="loadBtn">
                         Vázlat betöltése
                 </button>
                 <p></p>
@@ -174,7 +176,7 @@
             var currentPswd = ""
             LoadActive = (file) => {
                 if(loaded == 0) {
-                    document.getElementById("loadBtn").insertAdjacentHTML('afterend', '<p></p><button onclick="SaveEdits()">Módosítások mentése</button>')
+                    document.getElementById("loadBtn").insertAdjacentHTML('afterend', '<p></p><button class="btn btn-primary" onclick="SaveEdits()">Módosítások mentése</button>')
                 }
                 loaded = 1
                 currentFilename = file.filename
@@ -193,10 +195,10 @@
                 Object.keys(file.file).forEach(function(key,index) {
                     // key: the name of the object key
                     // index: the ordinal position of the key within the object 
-                    document.getElementById("whole").insertAdjacentHTML("beforeend", "<div id='placediv" + index + "'><h2 id='title" + index + "'>" + key + "</h2><button id='namebtn" + index + "' onclick='ChangeName(" + index + ")'>Helynév módosítása</button></div>")
+                    document.getElementById("whole").insertAdjacentHTML("beforeend", "<div id='placediv" + index + "'><h2 id='title" + index + "'>" + key + "</h2><button class='btn btn-primary' id='namebtn" + index + "' onclick='ChangeName(" + index + ")'>Helynév módosítása</button></div>")
                     
                     if(file.file[key].hasOwnProperty('loc')){
-                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button><p id="addlocbtnbr' + index + '"></p>')
                         var marker = new google.maps.Marker({
                             position: file.file[key].loc,
                             title: document.getElementById("title" + index).textContent    
@@ -204,16 +206,16 @@
                         allMarkers[index] = marker
                         allMarkers[index].setMap(map); 
                     } else {
-                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                     }
                     places += 1
                     subdivs[index] = -1
                     Object.keys(file.file[key].stuff).forEach(function(subkey,subindex) {
                         var stuff = file.file[key].stuff[subkey]
                         subdivs[index] += 1
-                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<div class="subdiv" id="' + index + 'subdiv' + subindex + '"><p></p><div id="' + index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + stuff.ttl + '</h4><p id="' + index + 'textbody' + subindex + '">' + stuff.text + '</p><button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div><button id="' + index + 'delsubdiv' + subindex + '" onclick="DelSubdiv(' + index + ', ' + subindex + ')">Törlés</button><p></p></div><p></p>')
+                        document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<div class="subdiv" id="' + index + 'subdiv' + subindex + '"><p></p><div id="' + index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + stuff.ttl + '</h4><p id="' + index + 'textbody' + subindex + '">' + stuff.text + '</p><button class="btn btn-primary" onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div><button class="btn btn-primary" id="' + index + 'delsubdiv' + subindex + '" onclick="DelSubdiv(' + index + ', ' + subindex + ')">Törlés</button><p></p></div><p></p>')
                     })
-                    document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p>')
+                    document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button class="btn btn-primary subbtn" id="subbtn' + index + '" onclick="AddSubdiv(' + index + ')">+</button><p></p><button class="btn btn-primary" id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p>')
                 });
             }
             SaveEdits = () => {
@@ -239,7 +241,7 @@
                 }
             }
             AddPlace = (index) => {
-                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
+                var newdiv = '<div id = "placediv' + index + '"><div id = "div' + index + '"><input type="text" id="input' + index + '"><button class="btn btn-primary" onclick="AddTitle(' + index + ')">Hely hozzáadása</button></div><h2 id="title' + index + '"></h2><button class="btn btn-primary" id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p></div>' 
                 places += 1
                 whole.insertAdjacentHTML('beforeend', newdiv);
                 document.getElementById("input" + index).addEventListener('keypress', function (e) {
@@ -274,13 +276,13 @@
                     }
                     else {
                         document.getElementById("title" + index).innerHTML += document.getElementById("input" + index).value.trim()
-                        document.getElementById("title" + index).insertAdjacentHTML('afterend', '<button id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("title" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
                         document.getElementById("div" + index).remove()
                         var subindex = 0
                         subdivs.push(0)
-                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
-                        document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button id="subbtn' + index + '" class="subbtn" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
+                        document.getElementById("addlocbtnbr" + index).insertAdjacentHTML("afterend", '<div class="subdiv" id="'+ index + 'subdiv' + subindex + '"><div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subindex + '"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
+                        document.getElementById(index + "subdiv" + subindex).insertAdjacentHTML("afterend", '<p></p><button class="btn btn-primary subbtn" id="subbtn' + index + '" onclick="AddSubdiv(' + index + ')">+</button><p></p>')
                     }       
                 }
             }
@@ -289,7 +291,7 @@
                     subdivs[index] = -1;
                 }
                 subdivs[index] +=1
-                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
+                document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
             SaveBox = (index, subindex) => {
                 var subtitle = document.getElementById(index + "subtitlein" + subindex).value.trim()
@@ -300,7 +302,7 @@
                 } else if(textbody == "") {
                     alert("Az üres vázlatpontoknak nincs sok értelme...")
                 } else {
-                    document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div>')
+                    document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + subtitle + '</h4>' + '<p id="' + index + 'textbody' + subindex + '">' + textbody + '</p>' + '<button class="btn btn-primary" onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div>')
                     document.getElementById(index + "insubdiv" + subindex).remove()
                 }
             }
@@ -308,7 +310,7 @@
                 var subtitlein = document.getElementById(index + "subtitle" + subindex).textContent.trim()
                 var textbody = document.getElementById(index + "textbody" + subindex).textContent.trim()
                 var subdiv = document.getElementById(index + "subdiv" + subindex)
-                document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><p></p></div>')
+                document.getElementById(index + "delsubdiv" + subindex).insertAdjacentHTML('beforebegin', '<div id="'+ index + 'insubdiv' + subindex + '"><input class="subtitlein" id="' + index + 'subtitlein' + subindex + '" value="' + subtitlein + '"><br>' + '<textarea cols="60" rows="5" id="' + index + 'textarea' + subindex + '">' + textbody + '</textarea><br>' + '<button class="btn btn-primary" id="' + index + 'save' + subindex + '" onclick="SaveBox(' + index + ', ' + subindex + ')">Mentés</button><p></p></div>')
                 document.getElementById(index + "datasubdiv" + subindex).remove()
             }
             var allMarkers = []
@@ -326,7 +328,7 @@
                     allMarkers[index] = marker
                     allMarkers[index].setMap(map);
                     document.getElementById('title' + index).style.color = "red";
-                    document.getElementById('addlocbtn' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
+                    document.getElementById('addlocbtn' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
                     document.getElementById('addlocbtn' + index).remove()
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
@@ -340,7 +342,7 @@
                 });;
                 allMarkers[index].setMap(map);
                 document.getElementById('title' + index).style.color = "black";
-                document.getElementById('done' + index).insertAdjacentHTML('afterend', '<button id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
+                document.getElementById('done' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
                 document.getElementById('done' + index).remove()
                 movingMarkers = -1
             }
@@ -358,7 +360,7 @@
                     });;
                     allMarkers[index].setMap(map);
                     document.getElementById('title' + index).style.color = "red";
-                    document.getElementById('changeloc' + index).insertAdjacentHTML('afterend', '<button id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
+                    document.getElementById('changeloc' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="done' + index + '" onclick="Done(' + index + ')">Kész</button>')
                     document.getElementById('changeloc' + index).remove()
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
@@ -370,7 +372,7 @@
                 document.getElementById("addlocbtnbr" + index).remove()
                 var title = document.getElementById("title" + index).textContent.trim()
                 document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
-                document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
+                document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button class="btn btn-primary" id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
                 placeNames.remove(document.getElementById("title" + index).textContent)
                 document.getElementById("title" + index).remove()
             }
@@ -384,7 +386,7 @@
                     else {
                         document.getElementById("savename" + index).remove()
                         var title = document.getElementById("namein" + index).value.trim()
-                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         document.getElementById("namein" + index).insertAdjacentHTML('afterend','<h2 id="title' + index + '">' + title + '</h2>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
                         document.getElementById("namein" + index).remove()
