@@ -149,18 +149,17 @@
                 if(confirm("Biztos betöltesz egy másik vázlatot? Itt minden nem mentett változtatás elvész.")) {
                     var vazlatokRef = database.ref('Vázlatok');
                     filename = prompt('Mi a betöltendő vázlatod mentési neve?', '')
+                    pswd = prompt('Mi a betöltendő vázlatodhoz tartozó kód? (Egy négyjegyű szám, amit mentéskor kaptál)', '')
                     var found = 0
                     await vazlatokRef.on('value', function(snapshot) {
                         snapshot.forEach(function(childSnapshot) {
                             var childData = childSnapshot.val();
-                            if(found == 0){
-                                if(childData.filename == filename){
-                                    if(childData.pswd == pswd){
-                                        found = 1;
-                                        LoadActive(childData);
-                                    } else {
-                                        alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
-                                    }
+                            if(childData.filename == filename){
+                                if(childData.pswd == pswd){
+                                    found = 1;
+                                    LoadActive(childData);
+                                } else {
+                                    alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
                                 }
                             }
                         });
@@ -168,7 +167,7 @@
                             alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
                         }
                     });
-                    pswd = prompt('Mi a betöltendő vázlatodhoz tartozó kód? (Egy négyjegyű szám, amit mentéskor kaptál)', '')
+                    
                 }
             }
             var currentFilename = ""
@@ -236,19 +235,7 @@
                             }
                         }     
                     }
-                    var vazlatokRef = database.ref('Vázlatok');
-                    vazlatokRef.on('value', function(snapshot) {
-                        snapshot.forEach(function(childSnapshot) {
-                            var childData = childSnapshot.val();
-                            if(childData.filename == currentFilename){
-                                if(childData.pswd == currentPswd){
-                                    console.log(childData.ref())
-                                } 
-                            }
-                            
-                        });
-                    });
-                    saveToFirebase(file, filename, pswd);
+                    saveToFirebase(file, currentFilename, currentPswd);
                 }
             }
             AddPlace = (index) => {
