@@ -172,7 +172,6 @@
                             alert("Sajnálom, ilyen név-jelszó kombinációval nem létezik mentés.")
                         }
                     });
-                    
                 }
             }
             var currentFilename = ""
@@ -220,6 +219,8 @@
                     })
                     document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button class="btn btn-primary subbtn" id="subbtn' + index + '" onclick="AddSubdiv(' + index + ')">+</button><p></p><button class="btn btn-primary" id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p>')
                 });
+                var vazlatokRef = database.ref("Vázlatok")
+                vazlatokRef.off('value')
             }
             SaveEdits = () => {
                 if(document.getElementsByTagName("input").length != 0 || document.getElementsByTagName("textarea").length != 0) {
@@ -426,6 +427,8 @@
                     }, function(error) {
                         alert("ohshitno"); // some error method
                     });
+                var vazlatokRef = database.ref("Vázlatok")
+                vazlatokRef.off('value')
             }
             
             
