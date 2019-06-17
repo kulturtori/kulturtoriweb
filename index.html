@@ -400,13 +400,13 @@
                     }
                     else {
                         document.getElementById("savename" + index).remove()
-                        var title = document.getElementById("namein" + index).value.trim()
-                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button>')
+                        var title = document.getElementById("namein" + index).value.trim()                       
                         if(hasloc[index] == 1){
                             document.getElementById('namein' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
                         } else {
                             document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         }
+                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button>')
                         document.getElementById("namein" + index).insertAdjacentHTML('afterend','<h2 id="title' + index + '">' + title + '</h2>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
                         document.getElementById("namein" + index).remove()
