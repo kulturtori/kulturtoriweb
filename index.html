@@ -83,6 +83,7 @@
         <div id="sidebar"><div id="map" class="column right"></div></div>
          
         <script defer="defer">
+            
             var loaded = 0
             var places = 0
             var whole = document.getElementById("whole")
@@ -374,12 +375,13 @@
                     movingMarkers = index
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
-            ChangeName = (index) => {
-                
+            var hasloc = []
+            ChangeName = (index) => {                
                 document.getElementById("namebtn" + index).remove()
                 try{
                     document.getElementById("addlocbtn" + index).remove()
                 } catch {
+                    hasloc[index] = 1
                     document.getElementById("changeloc" + index).remove()
                 }
                 document.getElementById("addlocbtnbr" + index).remove()
@@ -399,7 +401,12 @@
                     else {
                         document.getElementById("savename" + index).remove()
                         var title = document.getElementById("namein" + index).value.trim()
-                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button><button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button>')
+                        if(hasloc[index] == 1){
+                            document.getElementById('done' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
+                        } else {
+                            document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
+                        }
                         document.getElementById("namein" + index).insertAdjacentHTML('afterend','<h2 id="title' + index + '">' + title + '</h2>')
                         placeNames.push(document.getElementById("title" + index).innerHTML)
                         document.getElementById("namein" + index).remove()
