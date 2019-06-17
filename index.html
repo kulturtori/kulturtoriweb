@@ -377,7 +377,11 @@
             ChangeName = (index) => {
                 
                 document.getElementById("namebtn" + index).remove()
-                document.getElementById("addlocbtn" + index).remove()
+                try{
+                    document.getElementById("addlocbtn" + index).remove()
+                } catch {
+                    document.getElementById("changeloc" + index).remove()
+                }
                 document.getElementById("addlocbtnbr" + index).remove()
                 var title = document.getElementById("title" + index).textContent.trim()
                 document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
