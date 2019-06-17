@@ -403,7 +403,7 @@
                         var title = document.getElementById("namein" + index).value.trim()
                         document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="namebtn' + index + '" onclick="ChangeName(' + index + ')">Helynév módosítása</button>')
                         if(hasloc[index] == 1){
-                            document.getElementById('savename' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
+                            document.getElementById('namein' + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="changeloc' + index + '" onclick="ChangeLoc(' + index + ')">Pozíció megváltoztatása</button>')
                         } else {
                             document.getElementById("namein" + index).insertAdjacentHTML('afterend', '<button class="btn btn-primary" id="addlocbtn' + index + '" onclick="AddLoc(' + index + ')">Pozíció megadása</button><p id="addlocbtnbr' + index + '"></p>')
                         }
