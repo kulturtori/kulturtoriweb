@@ -384,7 +384,9 @@
                     hasloc[index] = 1
                     document.getElementById("changeloc" + index).remove()
                 }
-                document.getElementById("addlocbtnbr" + index).remove()
+                try {
+                    document.getElementById("addlocbtnbr" + index).remove()
+                } catch {}
                 var title = document.getElementById("title" + index).textContent.trim()
                 document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
                 document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button class="btn btn-primary" id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
