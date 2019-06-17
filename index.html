@@ -83,7 +83,7 @@
         <div id="sidebar"><div id="map" class="column right"></div></div>
          
         <script defer="defer">
-            
+            var changing = []
             var loaded = 0
             var places = 0
             var whole = document.getElementById("whole")
@@ -327,6 +327,7 @@
             var movingMarkers = -1
             AddLoc = (index) => {
                 if(movingMarkers == -1){
+                    changing[index] = 1
                     var marker = new google.maps.Marker({
                         position: map.getCenter(),
                         draggable:true,
@@ -344,6 +345,7 @@
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
             Done = (index) => {
+                changing[index] = 0
                 var coords = allMarkers[index].getPosition()
                 allMarkers[index].setMap(null);
                 allMarkers[index] =  new google.maps.Marker({
@@ -358,6 +360,7 @@
             }
             ChangeLoc = (index) => {
                 if(movingMarkers == -1){
+                    changing[index] = 1
                     var coords = allMarkers[index].getPosition()
                     allMarkers[index].setMap(null);
                     allMarkers[index] =  new google.maps.Marker({
@@ -376,22 +379,26 @@
                 } else {alert('Már van mozgó marker a térképen, kérlek előbb azt véglegesítsd!')}
             }
             var hasloc = []
-            ChangeName = (index) => {                
-                document.getElementById("namebtn" + index).remove()
-                try{
-                    document.getElementById("addlocbtn" + index).remove()
-                } catch {
-                    hasloc[index] = 1
-                    document.getElementById("changeloc" + index).remove()
+            ChangeName = (index) => {  
+                if(changing[index] == 1){
+                    alert("Kérlek véglegesítsd a pozíciót a névváltoztatás előtt!")
+                } else {
+                    document.getElementById("namebtn" + index).remove()
+                    try{
+                        document.getElementById("addlocbtn" + index).remove()
+                    } catch {
+                        hasloc[index] = 1
+                        document.getElementById("changeloc" + index).remove()
+                    }
+                    try {
+                        document.getElementById("addlocbtnbr" + index).remove()
+                    } catch {}
+                    var title = document.getElementById("title" + index).textContent.trim()
+                    document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
+                    document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button class="btn btn-primary" id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
+                    placeNames.remove(document.getElementById("title" + index).textContent)
+                    document.getElementById("title" + index).remove()
                 }
-                try {
-                    document.getElementById("addlocbtnbr" + index).remove()
-                } catch {}
-                var title = document.getElementById("title" + index).textContent.trim()
-                document.getElementById("title" + index).insertAdjacentHTML('afterend', '<input id="namein' + index + '" value="' + title + '">')
-                document.getElementById("namein" + index).insertAdjacentHTML('afterend','<button class="btn btn-primary" id="savename' + index + '" onclick="SaveName(' + index + ')">Helynév mentése</button><p id="maci' + index + '"></p>')
-                placeNames.remove(document.getElementById("title" + index).textContent)
-                document.getElementById("title" + index).remove()
             }
             SaveName = (index) => {
                 if(document.getElementById("namein" + index).value.trim() == ""){
