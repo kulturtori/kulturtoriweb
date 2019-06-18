@@ -111,18 +111,22 @@
                     } else {
                         var file = {}
                         for(var i=0; i<subdivs.length; i++){
-                            if(document.getElementById("title" + i) != undefined){
-                                console.log(document.getElementById("title" + i))
+                            if(document.getElementById("title" + i) != undefined){                                
                                 file[document.getElementById("title" + i).textContent] = {loc:{},stuff:[]}
-                                if(allMarkers[i] !== undefined){
+                                if(allMarkers[i] != undefined){
                                     file[document.getElementById("title" + i).textContent].loc.lat = allMarkers[i].getPosition().lat();
                                     file[document.getElementById("title" + i).textContent].loc.lng = allMarkers[i].getPosition().lng();
                                 }
                                 for(var j = 0; j<=subdivs[i]; j++){                                                             
-                                    if(document.getElementById(i + "subtitle" + j) != undefined){
-                                        console.log(document.getElementById(i + "subtitle" + j))                  
+                                    if(document.getElementById(i + "subtitle" + j) != undefined){               
                                         file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
                                     }                                
+                                }
+                                if(file[document.getElementById("title" + i).textContent].stuff.length  == 0){
+                                    file[document.getElementById("title" + i).textContent].stuff.push("")
+                                }
+                                if(Object.keys(file[document.getElementById("title" + i).textContent].loc).length == 0){
+                                    delete file[document.getElementById("title" + i).textContent].loc
                                 }
                             }     
                         }
@@ -140,6 +144,7 @@
                         pswd = CheckPswd(pswd, usedPswds);
                         alert("A mentésedhez biztonsági okok miatt egy kód is tartozik, ez egy négyjegyű szám. Ezt is jegyezd meg, enélkül szintén nem tudsz hozzáférni a vázlatodhoz. A kódod pedig: " + pswd)
                         saveToFirebase(file, filename, pswd);
+                        LoadActive({file: file, filename: filename, pswd: pswd})
                     }
                 }
             }
@@ -215,7 +220,10 @@
                     Object.keys(file.file[key].stuff).forEach(function(subkey,subindex) {
                         var stuff = file.file[key].stuff[subkey]
                         subdivs[index] += 1
+                        if(file.file[key].stuff.includes("")){
+                        }else{
                         document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<div class="subdiv" id="' + index + 'subdiv' + subindex + '"><p></p><div id="' + index + 'datasubdiv' + subindex + '"><h4 id="' + index + 'subtitle' + subindex + '">' + stuff.ttl + '</h4><p id="' + index + 'textbody' + subindex + '">' + stuff.text + '</p><button class="btn btn-primary" onclick="EditBox(' + index + ', ' + subindex + ')">Szerkesztés</button><p></p></div><button class="btn btn-primary" id="' + index + 'delsubdiv' + subindex + '" onclick="DelSubdiv(' + index + ', ' + subindex + ')">Törlés</button><p></p></div><p></p>')
+                        }
                     })
                     document.getElementById("placediv" + index).insertAdjacentHTML("beforeend", '<button class="btn btn-primary subbtn" id="subbtn' + index + '" onclick="AddSubdiv(' + index + ')">+</button><p></p><button class="btn btn-primary" id="deldiv' + index + '" onclick="DelDiv(' + index + ')">Törlés</button><p></p>')
                 });
@@ -238,6 +246,9 @@
                                 if(document.getElementById(i + "subtitle" + j) !== undefined){                        
                                     file[document.getElementById("title" + i).textContent].stuff.push({ttl: document.getElementById(i + "subtitle" + j).textContent, text: document.getElementById(i + "textbody" + j).textContent})
                                 }                                
+                            }
+                            if(file[document.getElementById("title" + i).textContent].stuff.length  == 0){
+                                file[document.getElementById("title" + i).textContent].stuff.push("")
                             }
                         }     
                     }
@@ -300,7 +311,6 @@
                 }
                 subdivs[index] +=1
                 
-
                 document.getElementById("subbtn" + index).insertAdjacentHTML("beforebegin", '<div class="subdiv" id="'+ index + 'subdiv' + subdivs[index] + '"><div id="'+ index + 'insubdiv' + subdivs[index] + '"><input class="subtitlein" id="' + index + 'subtitlein' + subdivs[index] + '"><br><textarea style="width: 100%" rows="5" id="' + index + 'textarea' + subdivs[index] + '" style="width: 100%"></textarea><br><button class="btn btn-primary" id="' + index + 'save' + subdivs[index] + '" onclick="SaveBox(' + index + ', ' + subdivs[index] + ')">Mentés</button></div><p></p><button class="btn btn-primary" id="' + index + 'delsubdiv' + subdivs[index] + '" onclick="DelSubdiv(' + index + ', ' + subdivs[index] + ')">Törlés</button><p></p></div>')
             }
             SaveBox = (index, subindex) => {
@@ -448,6 +458,7 @@
                     });
                 var vazlatokRef = database.ref("Vázlatok")
                 vazlatokRef.off('value')
+                
             }
             
             
